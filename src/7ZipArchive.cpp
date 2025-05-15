@@ -1,6 +1,6 @@
-#ifdef S_OK
-#undef S_OK
-#endif
+//#ifdef S_OK
+//#undef S_OK
+//#endif
 
 #if !defined(_WIN32) && !defined(_OS2)
 #include "CPP/myWindows/StdAfx.h"
