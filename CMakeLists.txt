@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 CMAKE_POLICY(
     SET CMP0048 NEW
 )
-cmake_policy(SET CMP0054 NEW)
+
 PROJECT (lib7zip
 	VERSION 3.0.0
 )
@@ -25,7 +25,7 @@ ENDIF()
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
 OPTION(BUILD_SHARED_LIB "build shared library" OFF)
-SET(P7ZIP_SOURCE_DIR "" CACHE PATH "pzip/7zip source code path")
+SET(P7ZIP_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/p7zip" CACHE PATH "pzip/7zip source code path")
 
 IF (NOT IS_DIRECTORY ${P7ZIP_SOURCE_DIR})
   MESSAGE(FATAL_ERROR "must proivde p7zip/7zip source path using -DP7ZIP_SOURCE_DIR")
@@ -39,35 +39,25 @@ SET(P7ZIP_INCLUDE_PATH   "${P7ZIP_SOURCE_DIR}"
 
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(warnings "-Wall -Wextra -Werror -Wno-unused-parameter -Wno-class-memaccess")
-  set(no_undefined "-Wl,--no-undefined")
+  set(warnings -Wall -Wextra -Werror -Wno-unused-parameter)
+  set(cxx_warnings -Wno-class-memaccess)
+  set(no_undefined -Wl,--no-undefined)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(warnings "-Wall -Wextra -Werror -Wno-inconsistent-missing-override -Wno-unused-parameter")
-  set(no_undefined "-Wl,-undefined,error")
+  set(warnings -Wall -Wextra -Werror -Wno-inconsistent-missing-override -Wno-unused-parameter)
+  set(cxx_warnings "")
+  set(no_undefined -Wl,-undefined,error)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set(warnings "/WX- /EHsc")
+    set(warnings /W4 /WX /EHsc)
     set(no_undefined "")
+    set(cxx_warnings "")
 endif()
 
 SET(CXX_STANDARD_REQUIRED OFF)
 SET(CXX_EXTENSION NO)
 
 if (NOT CONFIGURED_ONCE)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        set(CMAKE_C_FLAGS "-DUNICODE -D_UNICODE -DWIN32 -Zc:wchar_t ${warnings}"
-            CACHE STRING "Flags used by the compiler during all build types." FORCE)
-        set(CMAKE_CXX_FLAGS "-DUNICODE -D_UNICODE -DWIN32 -Zc:wchar_t  -FS -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew ${warnings}"
-            CACHE STRING "Flags used by the compiler during all build types." FORCE)
-        set(CMAKE_LINK_FLAGS "/DYNAMICBASE /NXCOMPAT /SUBSYSTEM:WINDOWS ${no_undefined}"
-            CACHE STRING "Flags used by the linker during all build types." FORCE)
-    else()
-        set(CMAKE_C_FLAGS "-fPIC ${warnings}"
-            CACHE STRING "Flags used by the compiler during all build types." FORCE)
-        set(CMAKE_CXX_FLAGS "-fPIC ${warnings} -std=c++14"
-            CACHE STRING "Flags used by the compiler during all build types." FORCE)
-        set(CMAKE_LINK_FLAGS "${no_undefined}"
-            CACHE STRING "Flags used by the linker during all build types." FORCE)
-    endif()
+ADD_COMPILE_OPTIONS(-fPIC -std=c++14 ${warnings} ${cxx_warnings})
+ADD_LINK_OPTIONS(${no_undefined})
 endif()
 
 ADD_SUBDIRECTORY(src)

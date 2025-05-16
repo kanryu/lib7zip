@@ -3,11 +3,11 @@
 
 #define LIB_7ZIP_VER_MAJOR 3
 #define LIB_7ZIP_VER_MINOR 0
-#define LIB_7ZIP_VER_BUILD 0
+#define LIB_7ZIP_VER_BUILD 1
 #define LIB_7ZIP_VERSION "3.0"
 #define LIB_7ZIP_7ZIP_VERSION "lib7Zip 3.0"
-#define LIB_7ZIP_DATE "2018-09"
-#define LIB_7ZIP_COPYRIGHT "Copyright (c) 2009-2018"
+#define LIB_7ZIP_DATE "2020-12"
+#define LIB_7ZIP_COPYRIGHT "Copyright (c) 2009-2020"
 #define LIB_7ZIP_VERSION_COPYRIGHT_DATE MY_VERSION "  " MY_COPYRIGHT "  " MY_DATE
 
 #include <string>
@@ -15,13 +15,17 @@
 
 #ifndef _WIN32
 #ifndef __int64
+#if __WORDSIZE == 64
+#define __int64 long int
+#else
 #define __int64 long long int
 #endif
-typedef std::basic_string<wchar_t> wstring;
-typedef std::basic_string<char> string;
+#endif
 #ifndef CLASS_E_CLASSNOTAVAILABLE
 #define CLASS_E_CLASSNOTAVAILABLE (0x80040111L)
 #endif
+#endif
+
 #define FILE_BEGIN           0
 #define FILE_CURRENT         1
 #define FILE_END             2
@@ -29,10 +33,8 @@ typedef std::basic_string<char> string;
 #ifndef S_OK
 #define S_OK 				 0
 #endif
-#else
 typedef std::basic_string<wchar_t> wstring;
 typedef std::basic_string<char> string;
-#endif
 
 typedef std::vector<wstring> WStringArray;
 
@@ -150,7 +152,6 @@ public:
 	virtual int Write(const void *data, unsigned int size, unsigned int *processedSize) = 0;
 	virtual int Seek(__int64 offset, unsigned int seekOrigin, unsigned __int64 *newPosition) = 0;
 	virtual int SetSize(unsigned __int64 size) = 0;
-	virtual int ReopenForIndex(unsigned int index) = 0;
 };
 
 class C7ZipArchive : public virtual C7ZipObject
@@ -164,9 +165,9 @@ public:
 	virtual bool GetItemInfo(unsigned int index, C7ZipArchiveItem ** ppArchiveItem) = 0;
 	virtual bool Extract(unsigned int index, C7ZipOutStream * pOutStream) = 0;
 	virtual bool Extract(unsigned int index, C7ZipOutStream * pOutStream, const wstring & pwd) = 0;
-	virtual bool Extract(C7ZipArchiveItem * pArchiveItem, C7ZipOutStream * pOutStream) = 0;
-	virtual bool ExtractAll(C7ZipOutStream * pOutStream) = 0;
-	virtual wstring GetArchivePassword() const  = 0;
+	virtual bool Extract(const C7ZipArchiveItem * pArchiveItem, C7ZipOutStream * pOutStream) = 0;
+    virtual bool ExtractAll(C7ZipOutStream * pOutStream) = 0;
+    virtual wstring GetArchivePassword() const  = 0;
 	virtual void SetArchivePassword(const wstring & password) = 0;
 	virtual bool IsPasswordSet() const = 0;
 
