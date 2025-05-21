@@ -158,6 +158,14 @@ wstring GetHandlerPath(void * pHandler)
   return L".";
 }
 
+std::string getExecutableDir() {
+    char buf[PATH_MAX + 1];
+    if (readlink("/proc/self/exe", buf, sizeof(buf) - 1) == -1)
+        throw std::string("readlink() failed");
+    std::string str(buf);
+    return str.substr(0, str.rfind('/'));
+}
+
 HMODULE Load7ZLibrary(const wstring & name)
 {
   string tmpName = NarrowString(name + L".so");
@@ -173,10 +181,12 @@ HMODULE Load7ZLibrary(const wstring & name)
   {
     tmpName = tmpName.substr(pos + 1);
   }
+  std::string executable_current = getExecutableDir();
 
   std::vector<const char *> lib_search_pathlist;
 
-  lib_search_pathlist.push_back(".");
+  //lib_search_pathlist.push_back(".");
+  lib_search_pathlist.push_back(executable_current.c_str());
   lib_search_pathlist.push_back("/usr/local/lib");
   lib_search_pathlist.push_back("/usr/lib");
   lib_search_pathlist.push_back("/usr/lib/7zip");
