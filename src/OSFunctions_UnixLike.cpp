@@ -178,6 +178,8 @@ HMODULE Load7ZLibrary(const wstring & name)
 
   lib_search_pathlist.push_back("/usr/local/lib");
   lib_search_pathlist.push_back("/usr/lib");
+  lib_search_pathlist.push_back("/usr/lib/7zip");
+  lib_search_pathlist.push_back("/usr/local/lib/7zip");
   lib_search_pathlist.push_back("/usr/lib/p7zip");
   lib_search_pathlist.push_back("/usr/local/lib/p7zip");
   lib_search_pathlist.push_back(".");
