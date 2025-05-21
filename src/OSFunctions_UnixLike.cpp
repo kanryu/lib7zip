@@ -176,13 +176,13 @@ HMODULE Load7ZLibrary(const wstring & name)
 
   std::vector<const char *> lib_search_pathlist;
 
+  lib_search_pathlist.push_back(".");
   lib_search_pathlist.push_back("/usr/local/lib");
   lib_search_pathlist.push_back("/usr/lib");
   lib_search_pathlist.push_back("/usr/lib/7zip");
   lib_search_pathlist.push_back("/usr/local/lib/7zip");
   lib_search_pathlist.push_back("/usr/lib/p7zip");
   lib_search_pathlist.push_back("/usr/local/lib/p7zip");
-  lib_search_pathlist.push_back(".");
 
   for(std::vector<const char *>::iterator lib_search_pathlistIt = lib_search_pathlist.begin();
       lib_search_pathlistIt != lib_search_pathlist.end();
